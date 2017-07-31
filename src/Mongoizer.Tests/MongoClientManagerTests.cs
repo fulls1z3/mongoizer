@@ -21,7 +21,7 @@ namespace Mongoizer.Tests {
 
         [Fact]
         [TestPriority(21)]
-        public void InitializationWithNoConnectionStringShouldThrow()  => Assert.Throws<MongoConfigurationException>(delegate {
+        public void InitializationWithNoConnectionStringShouldThrow()  => Assert.Throws<ArgumentException>(delegate {
             MongoClientManager.Initialize("", _testDatabase);
         });
 

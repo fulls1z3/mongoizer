@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Conventions;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace Mongoizer.Core {
@@ -11,11 +9,11 @@ namespace Mongoizer.Core {
 
         private static IMongoDatabase GetDatabase(string connectionString,
                                                   string database) {
-            var client = new MongoClient(connectionString);
-
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new ArgumentException("The argument `connectionString` cannot be null or all whitespace.",
                     nameof(connectionString));
+
+            var client = new MongoClient(connectionString);
 
             if (string.IsNullOrWhiteSpace(database))
                 throw new ArgumentException("The argument `database` cannot be null or all whitespace.",
