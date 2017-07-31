@@ -6,9 +6,9 @@ namespace Mongoizer.Domain {
     [DataContract]
     [Serializable]
     [BsonIgnoreExtraElements(Inherited = true)]
-    public abstract class BaseDocument : IDocument {
+    public abstract class BaseDocument<TKey> : IDocument<TKey> {
         [DataMember]
         [BsonId]
-        public virtual string Id { get; set; }
+        public virtual TKey Id { get; set; }
     }
 }

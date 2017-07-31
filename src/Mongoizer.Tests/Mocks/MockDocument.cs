@@ -1,8 +1,13 @@
 ﻿using System;
+using MongoDB.Bson;
 using Mongoizer.Domain;
 
 namespace Mongoizer.Tests.Mocks {
-    public class MockDocument: BaseDocument {
+    public class MockObject: BaseDocument<ObjectId> {
+        public string Name { get; set; }
+    }
+
+    public class MockDocument: BaseDocument<string> {
         public string Name { get; set; }
         public string Value { get; set; }
         public DateTime CreationDate { get; set; }

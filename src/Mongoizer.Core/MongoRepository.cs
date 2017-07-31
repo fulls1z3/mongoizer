@@ -9,8 +9,16 @@ using MongoDB.Driver;
 using Mongoizer.Domain;
 
 namespace Mongoizer.Core {
-    public class MongoRepository<T>
-        where T : class, IDocument {
+    public class MongoRepository<T> : MongoRepository<T, ObjectId>
+        where T : IDocument<ObjectId> {
+
+        public MongoRepository(IMongoDatabase database)
+            : base(database) {
+        }
+    }
+
+    public class MongoRepository<T, TKey>
+        where T : IDocument<TKey> {
 
         private readonly IMongoCollection<T> _collection;
 
@@ -18,7 +26,7 @@ namespace Mongoizer.Core {
             var typeName = typeof(T).Name;
             var collectionName = typeName.First().ToString(CultureInfo.InvariantCulture).ToLower() + typeName.Substring(1);
 
-            _collection = database.GetCollection<T>(collectionName);  
+            _collection = database.GetCollection<T>(collectionName);
         }
 
         // TODO: paging
@@ -31,8 +39,8 @@ namespace Mongoizer.Core {
             return res;
         }
 
-        public async Task<T> FindAsync(string id) {
-            if (string.IsNullOrWhiteSpace(id))
+        public async Task<T> FindAsync(TKey id) {
+            if (string.IsNullOrWhiteSpace(id.ToString()))
                 throw new ArgumentException(string.Format(Utils.ARGUMENT_EMPTY_MESSAGE, nameof(id)), nameof(id));
 
             var filter = Builders<T>.Filter.Eq("_id", id);
@@ -84,7 +92,7 @@ namespace Mongoizer.Core {
             if (!items.HasItems())
                 throw new ArgumentException(string.Format(Utils.ARGUMENT_EMPTY_LIST_MESSAGE, nameof(items)), nameof(items));
 
-            var ids = items.Where(x => !string.IsNullOrWhiteSpace(x.Id)).Select(x => x.Id).ToList();
+            var ids = items.Where(x => !string.IsNullOrWhiteSpace(x.Id.ToString())).Select(x => x.Id).ToList();
 
             var ex = await FindAsync(Builders<T>.Filter.In("_id", ids));
 

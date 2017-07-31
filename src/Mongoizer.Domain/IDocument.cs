@@ -1,5 +1,11 @@
-﻿namespace Mongoizer.Domain {
+﻿using MongoDB.Bson;
+
+namespace Mongoizer.Domain {
     public interface IDocument {
-        string Id { get; set; }
+        ObjectId Id { get; set; }
+    }
+
+    public interface IDocument<TKey> {
+        TKey Id { get; set; }
     }
 }
