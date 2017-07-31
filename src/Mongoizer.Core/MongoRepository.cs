@@ -19,18 +19,17 @@ namespace Mongoizer.Core {
 
     public class MongoRepository<T, TKey>
         where T : IDocument<TKey> {
-
-        private readonly IMongoCollection<T> _collection;
+        public readonly IMongoCollection<T> Collection;
 
         public MongoRepository(IMongoDatabase database) {
             var typeName = typeof(T).Name;
             var collectionName = typeName.First().ToString(CultureInfo.InvariantCulture).ToLower() + typeName.Substring(1);
 
-            _collection = database.GetCollection<T>(collectionName);
+            Collection = database.GetCollection<T>(collectionName);
         }
 
         public async Task<IList<T>> FindAsync(FindOptions<T> findOptions = null) {
-            var req = await _collection.FindAsync(new BsonDocument(), findOptions);
+            var req = await Collection.FindAsync(new BsonDocument(), findOptions);
             var res = await req.ToListAsync();
 
             return res;
@@ -41,7 +40,7 @@ namespace Mongoizer.Core {
                 throw new ArgumentException(string.Format(Utils.ARGUMENT_EMPTY_MESSAGE, nameof(id)), nameof(id));
 
             var filter = Builders<T>.Filter.Eq("_id", id);
-            var req = await _collection.FindAsync(filter);
+            var req = await Collection.FindAsync(filter);
             var res = await req.FirstOrDefaultAsync();
 
             return res;
@@ -51,7 +50,7 @@ namespace Mongoizer.Core {
             if (filter == null)
                 throw new ArgumentNullException(string.Format(Utils.ARGUMENT_NULL_MESSAGE, nameof(filter)), nameof(filter));
 
-            var req = await _collection.FindAsync(filter, findOptions);
+            var req = await Collection.FindAsync(filter, findOptions);
             var res = await req.ToListAsync();
 
             return res;
@@ -61,7 +60,7 @@ namespace Mongoizer.Core {
             if (predicate == null)
                 throw new ArgumentNullException(string.Format(Utils.ARGUMENT_NULL_MESSAGE, nameof(predicate)), nameof(predicate));
 
-            var req = await _collection.FindAsync(predicate, findOptions);
+            var req = await Collection.FindAsync(predicate, findOptions);
             var res = await req.ToListAsync();
 
             return res;
@@ -76,7 +75,7 @@ namespace Mongoizer.Core {
             if (ex != null)
                 return;
 
-            await _collection.InsertOneAsync(item);
+            await Collection.InsertOneAsync(item);
         }
 
         public async Task CreateAsync(IList<T> items) {
@@ -90,7 +89,7 @@ namespace Mongoizer.Core {
             if (ex.HasItems())
                 return;
 
-            await _collection.InsertManyAsync(items);
+            await Collection.InsertManyAsync(items);
         }
 
         public async Task<bool> ReplaceAsync(string id, T item) {
@@ -101,7 +100,7 @@ namespace Mongoizer.Core {
                 throw new ArgumentNullException(string.Format(Utils.ARGUMENT_NULL_MESSAGE, nameof(item)), nameof(item));
 
             var filter = Builders<T>.Filter.Eq("_id", id);
-            var response = await _collection.ReplaceOneAsync(filter, item);
+            var response = await Collection.ReplaceOneAsync(filter, item);
             
             return response.IsAcknowledged && response.ModifiedCount == 1;
         }
@@ -114,7 +113,7 @@ namespace Mongoizer.Core {
                 throw new ArgumentNullException(string.Format(Utils.ARGUMENT_NULL_MESSAGE, nameof(update)), nameof(update));
 
             var filter = Builders<T>.Filter.Eq("_id", id);
-            var response = await _collection.UpdateOneAsync(filter, update);
+            var response = await Collection.UpdateOneAsync(filter, update);
 
             return response.IsAcknowledged && response.ModifiedCount == 1;
         }
@@ -127,7 +126,7 @@ namespace Mongoizer.Core {
                 throw new ArgumentNullException(string.Format(Utils.ARGUMENT_NULL_MESSAGE, nameof(update)), nameof(update));
 
             var filter = Builders<T>.Filter.In("_id", ids);
-            var response = await _collection.UpdateManyAsync(filter, update);
+            var response = await Collection.UpdateManyAsync(filter, update);
 
             return !(response.IsAcknowledged && response.ModifiedCount > 0) ? 0 : response.ModifiedCount;
         }
@@ -139,7 +138,7 @@ namespace Mongoizer.Core {
             if (update == null)
                 throw new ArgumentNullException(string.Format(Utils.ARGUMENT_NULL_MESSAGE, nameof(update)), nameof(update));
 
-            var response = await _collection.UpdateManyAsync(predicate, update);
+            var response = await Collection.UpdateManyAsync(predicate, update);
 
             return !(response.IsAcknowledged && response.ModifiedCount > 0) ? 0 : response.ModifiedCount;
         }
@@ -149,7 +148,7 @@ namespace Mongoizer.Core {
                 throw new ArgumentException(string.Format(Utils.ARGUMENT_EMPTY_MESSAGE, nameof(id)), nameof(id));
 
             var filter = Builders<T>.Filter.Eq("_id", id);
-            var result = await _collection.DeleteOneAsync(filter);
+            var result = await Collection.DeleteOneAsync(filter);
 
             return result.IsAcknowledged && result.DeletedCount == 1;
         }
@@ -159,7 +158,7 @@ namespace Mongoizer.Core {
                 throw new ArgumentException(string.Format(Utils.ARGUMENT_EMPTY_LIST_MESSAGE, nameof(ids)), nameof(ids));
 
             var filter = Builders<T>.Filter.In("_id", ids);
-            var result = await _collection.DeleteManyAsync(filter);
+            var result = await Collection.DeleteManyAsync(filter);
 
             return !result.IsAcknowledged ? 0 : result.DeletedCount;
         }
@@ -168,7 +167,7 @@ namespace Mongoizer.Core {
             if (predicate == null)
                 throw new ArgumentNullException(string.Format(Utils.ARGUMENT_NULL_MESSAGE, nameof(predicate)), nameof(predicate));
 
-            var result = await _collection.DeleteManyAsync(predicate);
+            var result = await Collection.DeleteManyAsync(predicate);
             
             return !result.IsAcknowledged ? 0 : result.DeletedCount;
         }
