@@ -29,11 +29,8 @@ namespace Mongoizer.Core {
             _collection = database.GetCollection<T>(collectionName);
         }
 
-        // TODO: paging
-        // TODO: size
-        // TODO: etc
-        public async Task<IList<T>> FindAsync() {
-            var req = await _collection.FindAsync<T>(new BsonDocument());
+        public async Task<IList<T>> FindAsync(FindOptions<T> findOptions = null) {
+            var req = await _collection.FindAsync(new BsonDocument(), findOptions);
             var res = await req.ToListAsync();
 
             return res;
@@ -50,27 +47,21 @@ namespace Mongoizer.Core {
             return res;
         }
 
-        // TODO: paging
-        // TODO: size
-        // TODO: etc
-        public async Task<IList<T>> FindAsync(FilterDefinition<T> filter) {
+        public async Task<IList<T>> FindAsync(FilterDefinition<T> filter, FindOptions<T> findOptions = null) {
             if (filter == null)
                 throw new ArgumentNullException(string.Format(Utils.ARGUMENT_NULL_MESSAGE, nameof(filter)), nameof(filter));
 
-            var req = await _collection.FindAsync<T>(filter);
+            var req = await _collection.FindAsync(filter, findOptions);
             var res = await req.ToListAsync();
 
             return res;
         }
 
-        // TODO: paging
-        // TODO: size
-        // TODO: etc
-        public async Task<IList<T>> FindAsync(Expression<Func<T, bool>> predicate) {
+        public async Task<IList<T>> FindAsync(Expression<Func<T, bool>> predicate, FindOptions<T> findOptions = null) {
             if (predicate == null)
                 throw new ArgumentNullException(string.Format(Utils.ARGUMENT_NULL_MESSAGE, nameof(predicate)), nameof(predicate));
 
-            var req = await _collection.FindAsync<T>(predicate);
+            var req = await _collection.FindAsync(predicate, findOptions);
             var res = await req.ToListAsync();
 
             return res;
