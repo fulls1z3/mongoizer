@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using System.Linq;
-using MongoDB.Driver;
 using Mongoizer.Core;
 using Xunit;
 using XunitOrderer;

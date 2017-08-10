@@ -92,8 +92,8 @@ namespace Mongoizer.Core {
             await Collection.InsertManyAsync(items);
         }
 
-        public async Task<bool> ReplaceAsync(string id, T item) {
-            if (string.IsNullOrWhiteSpace(id))
+        public async Task<bool> ReplaceAsync(TKey id, T item) {
+            if (string.IsNullOrWhiteSpace(id.ToString()))
                 throw new ArgumentException(string.Format(Utils.ARGUMENT_EMPTY_MESSAGE, nameof(id)), nameof(id));
 
             if (item == null)
@@ -105,8 +105,8 @@ namespace Mongoizer.Core {
             return response.IsAcknowledged && response.ModifiedCount == 1;
         }
         
-        public async Task<bool> UpdateAsync(string id, UpdateDefinition<T> update) {
-            if (string.IsNullOrWhiteSpace(id))
+        public async Task<bool> UpdateAsync(TKey id, UpdateDefinition<T> update) {
+            if (string.IsNullOrWhiteSpace(id.ToString()))
                 throw new ArgumentException(string.Format(Utils.ARGUMENT_EMPTY_MESSAGE, nameof(id)), nameof(id));
 
             if (update == null)
@@ -143,8 +143,8 @@ namespace Mongoizer.Core {
             return !(response.IsAcknowledged && response.ModifiedCount > 0) ? 0 : response.ModifiedCount;
         }
 
-        public async Task<bool> DeleteAsync(string id) {
-            if (string.IsNullOrWhiteSpace(id))
+        public async Task<bool> DeleteAsync(TKey id) {
+            if (string.IsNullOrWhiteSpace(id.ToString()))
                 throw new ArgumentException(string.Format(Utils.ARGUMENT_EMPTY_MESSAGE, nameof(id)), nameof(id));
 
             var filter = Builders<T>.Filter.Eq("_id", id);
